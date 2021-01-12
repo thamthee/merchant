@@ -17,7 +17,7 @@ type Info struct {
 	Stock       int                  `bson:"stock,omitempty" json:"stock"`
 	Sizes       []string             `bson:"sizes,omitempty" json:"sizes"`
 	Colors      []string             `bson:"colors,omitempty" json:"colors"`
-	Vendor      string               `bson:"vendor,omitempty" json:"vendor"`
+	Seller      string               `bson:"seller,omitempty" json:"vendor"`
 	CreatedAt   time.Time            `bson:"created_at,omitempty" json:"created_at"`
 }
 

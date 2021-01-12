@@ -36,7 +36,7 @@ func New(log *logrus.Logger, db *mongo.Database) Product {
 }
 
 // Create inserts a new product into the database.
-func (p Product) Create(ctx context.Context, vendor string, np NewProduct, date time.Time) (Info, error) {
+func (p Product) Create(ctx context.Context, seller string, np NewProduct, date time.Time) (Info, error) {
 	price, err := primitive.ParseDecimal128(np.Price)
 	if err != nil {
 		return Info{}, errors.Wrap(err, "parse price")
@@ -52,7 +52,7 @@ func (p Product) Create(ctx context.Context, vendor string, np NewProduct, date 
 		Stock:       np.Stock,
 		Sizes:       np.Sizes,
 		Colors:      np.Colors,
-		Vendor:      vendor,
+		Seller:      seller,
 		CreatedAt:   date.UTC(),
 	}
 
