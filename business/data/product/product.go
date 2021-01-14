@@ -2,7 +2,6 @@ package product
 
 import (
 	"context"
-	"time"
 
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
@@ -35,36 +34,6 @@ func New(log *logrus.Logger, db *mongo.Database) Product {
 	}
 }
 
-// Create inserts a new product into the database.
-func (p Product) Create(ctx context.Context, seller string, np NewProduct, date time.Time) (Info, error) {
-	price, err := primitive.ParseDecimal128(np.Price)
-	if err != nil {
-		return Info{}, errors.Wrap(err, "parse price")
-	}
-
-	info := Info{
-		ID:          primitive.NewObjectID(),
-		Title:       np.Title,
-		Price:       price,
-		Currency:    np.Currency,
-		Description: np.Description,
-		SKU:         np.SKU,
-		Stock:       np.Stock,
-		Sizes:       np.Sizes,
-		Colors:      np.Colors,
-		Seller:      seller,
-		CreatedAt:   date.UTC(),
-	}
-
-	col := p.db.Collection(Collection)
-
-	if _, err := col.InsertOne(ctx, &info); err != nil {
-		return Info{}, errors.Wrap(err, "inserting product")
-	}
-
-	return info, nil
-}
-
 // QueryByID gets a specific product from the database by id.
 func (p Product) QueryByID(ctx context.Context, id string) (Info, error) {
 	hex, err := primitive.ObjectIDFromHex(id)
@@ -90,4 +59,82 @@ func (p Product) QueryByID(ctx context.Context, id string) (Info, error) {
 	}
 
 	return info, nil
+}
+
+func (p Product) QuerySoftwareByID(ctx context.Context, id string) (Software, error) {
+	hex, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return Software{}, ErrInvalidID
+	}
+
+	filter := bson.D{
+		primitive.E{
+			Key:   "_id",
+			Value: hex,
+		},
+	}
+
+	col := p.db.Collection(Collection)
+
+	var sw Software
+	if err := col.FindOne(ctx, filter).Decode(&sw); err != nil {
+		if err == mongo.ErrNoDocuments {
+			return Software{}, ErrNotFound
+		}
+		return Software{}, errors.Wrapf(err, "finding software : %q", id)
+	}
+
+	return sw, nil
+}
+
+func (p Product) QueryFoodByID(ctx context.Context, id string) (Food, error) {
+	hex, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return Food{}, ErrInvalidID
+	}
+
+	filter := bson.D{
+		primitive.E{
+			Key:   "_id",
+			Value: hex,
+		},
+	}
+
+	col := p.db.Collection(Collection)
+
+	var food Food
+	if err := col.FindOne(ctx, filter).Decode(&food); err != nil {
+		if err == mongo.ErrNoDocuments {
+			return Food{}, ErrNotFound
+		}
+		return Food{}, errors.Wrapf(err, "finding food : %q", id)
+	}
+
+	return food, nil
+}
+
+func (p Product) QueryDressByID(ctx context.Context, id string) (Dress, error) {
+	hex, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return Dress{}, ErrInvalidID
+	}
+
+	filter := bson.D{
+		primitive.E{
+			Key:   "_id",
+			Value: hex,
+		},
+	}
+
+	col := p.db.Collection(Collection)
+
+	var dress Dress
+	if err := col.FindOne(ctx, filter).Decode(&dress); err != nil {
+		if err == mongo.ErrNoDocuments {
+			return Dress{}, ErrNotFound
+		}
+		return Dress{}, errors.Wrapf(err, "finding dress : %q", id)
+	}
+
+	return dress, nil
 }
