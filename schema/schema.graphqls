@@ -1,0 +1,81 @@
+
+scalar Time
+
+schema {
+    query: Query
+    mutation: Mutation
+}
+
+type Query {
+    product(id: ID!): SearchResult
+    seller: Seller
+}
+
+type Mutation {
+
+}
+
+union SearchResult = Software | Food | Dress
+
+interface Product {
+    id: ID!
+    title: String
+    price: Float
+    currency: String
+    description: String
+    sku: String
+    stock: Int
+    owner: Seller!
+    createAt: Time
+}
+
+type Software implements Product {
+    id: ID!
+    title: String
+    price: Float
+    currency: String
+    description: String
+    sku: String
+    stock: Int
+    owner: Seller!
+    createAt: Time
+
+    license: String
+    code: String
+}
+
+type Food implements Product {
+    id: ID!
+    title: String
+    price: Float
+    currency: String
+    description: String
+    sku: String
+    stock: Int
+    owner: Seller!
+    createAt: Time
+
+    expireAt: Time
+}
+
+type Dress implements Product {
+    id: ID!
+    title: String
+    price: Float
+    currency: String
+    description: String
+    sku: String
+    stock: Int
+    owner: Seller!
+    createAt: Time
+
+    sizes: [String]
+    colors: [String]
+}
+
+type Seller {
+    id: ID!
+    title: String
+    slug: String
+    description: String
+}
