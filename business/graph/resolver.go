@@ -15,3 +15,10 @@ type Resolver struct {
 	product product.Product
 	seller  seller.Seller
 }
+
+func New(p product.Product, s seller.Seller) *Resolver {
+	return &Resolver{
+		product: p,
+		seller:  s,
+	}
+}
