@@ -2,19 +2,15 @@ package main
 
 import (
 	"context"
-	"net/http"
 	"os"
+	"os/signal"
+	"syscall"
 
-	"github.com/99designs/gqlgen/graphql/handler"
-	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
 
-	"github.com/thamthee/merchant/business/data/product"
-	"github.com/thamthee/merchant/business/data/seller"
-	"github.com/thamthee/merchant/business/graph"
-	"github.com/thamthee/merchant/business/graph/generated"
+	"github.com/thamthee/merchant/app/merchant-graph/handlers"
 	"github.com/thamthee/merchant/configs"
 	"github.com/thamthee/merchant/foundation/database"
 )
@@ -65,17 +61,29 @@ func run(log *logrus.Logger) error {
 		ReadPref: readpref.Nearest(),
 	})
 
-	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{
-		Resolvers: graph.New(
-			product.New(log, db.Database(database.Merchant)),
-			seller.New(log, db.Database(database.Merchant)),
-		),
-		Directives: generated.DirectiveRoot{},
-		Complexity: generated.ComplexityRoot{},
-	}))
+	// =========================================
+	// Start API Service
 
-	http.Handle("/", playground.Handler("Playground", "/query"))
-	http.Handle("/query", srv)
+	shutdown := make(chan os.Signal, 1)
+	signal.Notify(shutdown, os.Interrupt, syscall.SIGTERM)
 
-	return http.ListenAndServe(":3000", nil)
+	serverError := make(chan error, 1)
+
+	go func() {
+		log.Printf("main: API listening on %s", config.Web.APIHost)
+		serverError <- handlers.API(log, db, config.Web.APIHost)
+	}()
+
+	// =========================================
+	// Shutdown
+
+	select {
+	case err := <-serverError:
+		return errors.Wrap(err, "server error")
+	case sig := <-shutdown:
+		log.Printf("main: %v : Shuting down", sig)
+		// TODO: Teardown graphql here.
+	}
+
+	return nil
 }
