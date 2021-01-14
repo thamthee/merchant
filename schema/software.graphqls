@@ -1,0 +1,34 @@
+
+extend type Query {
+    software(id: ID!): Software
+}
+
+extend type Mutation {
+    createSoftware(input: NewSoftware!): Software!
+}
+
+type Software implements Product {
+    id: ID!
+    title: String
+    price: Float
+    currency: String
+    description: String
+    sku: String
+    stock: Int
+    owner: Seller!
+    createAt: Time
+
+    license: String
+    code: String
+}
+
+input NewSoftware {
+    title: String
+    price: Float
+    currency: String
+    description: String
+    sku: String
+    stock: Int
+    license: String
+    code: String
+}

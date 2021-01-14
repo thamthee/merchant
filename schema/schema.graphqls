@@ -8,11 +8,11 @@ schema {
 
 type Query {
     product(id: ID!): SearchResult
-    seller: Seller
 }
 
 type Mutation {
-
+    createFood(input: NewFood!): Food!
+    createDress(input: NewDress!): Dress!
 }
 
 union SearchResult = Software | Food | Dress
@@ -27,21 +27,6 @@ interface Product {
     stock: Int
     owner: Seller!
     createAt: Time
-}
-
-type Software implements Product {
-    id: ID!
-    title: String
-    price: Float
-    currency: String
-    description: String
-    sku: String
-    stock: Int
-    owner: Seller!
-    createAt: Time
-
-    license: String
-    code: String
 }
 
 type Food implements Product {
@@ -73,9 +58,23 @@ type Dress implements Product {
     colors: [String]
 }
 
-type Seller {
-    id: ID!
+input NewFood {
     title: String
-    slug: String
+    price: Float
+    currency: String
     description: String
+    sku: String
+    stock: Int
+    expireAt: Time
+}
+
+input NewDress {
+    title: String
+    price: Float
+    currency: String
+    description: String
+    sku: String
+    stock: Int
+    sizes: [String]
+    colors: [String]
 }

@@ -1,0 +1,21 @@
+
+extend type Query {
+    seller: Seller
+}
+
+extend type Mutation {
+    createSeller(input: NewSeller!): Seller!
+}
+
+input NewSeller {
+    title: String
+    slug: String
+    description: String
+}
+
+type Seller {
+    id: ID!
+    title: String
+    slug: String
+    description: String
+}
