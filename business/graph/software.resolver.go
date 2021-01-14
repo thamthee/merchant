@@ -5,15 +5,16 @@ package graph
 
 import (
 	"context"
-	"fmt"
+
+	"github.com/pkg/errors"
 
 	"github.com/thamthee/merchant/business/graph/models"
 )
 
 func (r *mutationResolver) CreateSoftware(ctx context.Context, input models.NewSoftware) (*models.Software, error) {
-	panic(fmt.Errorf("not implemented"))
+	return nil, errors.New("waiting for implement")
 }
 
 func (r *queryResolver) Software(ctx context.Context, id string) (*models.Software, error) {
-	panic(fmt.Errorf("not implemented"))
+	return nil, errors.New("not found")
 }

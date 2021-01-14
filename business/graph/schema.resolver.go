@@ -5,22 +5,23 @@ package graph
 
 import (
 	"context"
-	"fmt"
+
+	"github.com/pkg/errors"
 
 	"github.com/thamthee/merchant/business/graph/generated"
 	"github.com/thamthee/merchant/business/graph/models"
 )
 
 func (r *mutationResolver) CreateFood(ctx context.Context, input models.NewFood) (*models.Food, error) {
-	panic(fmt.Errorf("not implemented"))
+	return nil, errors.New("waiting for implement")
 }
 
 func (r *mutationResolver) CreateDress(ctx context.Context, input models.NewDress) (*models.Dress, error) {
-	panic(fmt.Errorf("not implemented"))
+	return nil, errors.New("waiting for implement")
 }
 
 func (r *queryResolver) Product(ctx context.Context, id string) (models.SearchResult, error) {
-	panic(fmt.Errorf("not implemented"))
+	return nil, errors.New("not found")
 }
 
 // Mutation returns generated.MutationResolver implementation.

@@ -60,6 +60,14 @@ func run(log *logrus.Logger) error {
 		IsDirect: config.Mongo.IsDirect,
 		ReadPref: readpref.Nearest(),
 	})
+	if err != nil {
+		return errors.Wrap(err, "unable to connect mongo db")
+	}
+
+	defer func() {
+		log.Printf("main: Database shutting down: %v", config.Mongo.Hosts)
+		db.Disconnect(context.Background())
+	}()
 
 	// =========================================
 	// Start API Service
