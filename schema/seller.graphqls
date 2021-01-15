@@ -9,14 +9,14 @@ extend type Mutation {
 }
 
 input NewSeller {
-    title: String!
+    name: String!
     slug: String
     description: String!
 }
 
 type Seller {
     id: ID!
-    title: String!
+    name: String!
     slug: String!
     description: String!
 }
