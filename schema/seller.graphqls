@@ -1,6 +1,7 @@
 
 extend type Query {
-    seller: Seller
+    seller(id: ID!): Seller
+    sellers(limit: Int!, offer: Int!): [Seller!]
 }
 
 extend type Mutation {
@@ -8,14 +9,14 @@ extend type Mutation {
 }
 
 input NewSeller {
-    title: String
+    title: String!
     slug: String
-    description: String
+    description: String!
 }
 
 type Seller {
     id: ID!
-    title: String
-    slug: String
-    description: String
+    title: String!
+    slug: String!
+    description: String!
 }

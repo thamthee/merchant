@@ -1,13 +1,13 @@
 
 extend type Query {
-    software(id: ID!): Software
+    food(id: ID!): Food!
 }
 
 extend type Mutation {
-    createSoftware(input: NewSoftware!): Software!
+    createFood(input: NewFood!): Food!
 }
 
-type Software implements Product {
+type Food implements Product {
     id: ID!
     title: String!
     price: Float!
@@ -18,17 +18,15 @@ type Software implements Product {
     owner: Seller!
     createAt: Time!
 
-    license: String!
-    code: String!
+    expireAt: Time!
 }
 
-input NewSoftware {
+input NewFood {
     title: String!
     price: Float!
     currency: String!
     description: String!
     sku: String!
     stock: Int!
-    license: String!
-    code: String!
+    expireAt: Time!
 }

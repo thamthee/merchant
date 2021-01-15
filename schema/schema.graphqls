@@ -3,78 +3,22 @@ scalar Time
 
 schema {
     query: Query
-    mutation: Mutation
 }
 
 type Query {
     product(id: ID!): SearchResult
 }
 
-type Mutation {
-    createFood(input: NewFood!): Food!
-    createDress(input: NewDress!): Dress!
-}
-
 union SearchResult = Software | Food | Dress
 
 interface Product {
     id: ID!
-    title: String
-    price: Float
-    currency: String
-    description: String
-    sku: String
-    stock: Int
+    title: String!
+    price: Float!
+    currency: String!
+    description: String!
+    sku: String!
+    stock: Int!
     owner: Seller!
-    createAt: Time
-}
-
-type Food implements Product {
-    id: ID!
-    title: String
-    price: Float
-    currency: String
-    description: String
-    sku: String
-    stock: Int
-    owner: Seller!
-    createAt: Time
-
-    expireAt: Time
-}
-
-type Dress implements Product {
-    id: ID!
-    title: String
-    price: Float
-    currency: String
-    description: String
-    sku: String
-    stock: Int
-    owner: Seller!
-    createAt: Time
-
-    sizes: [String]
-    colors: [String]
-}
-
-input NewFood {
-    title: String
-    price: Float
-    currency: String
-    description: String
-    sku: String
-    stock: Int
-    expireAt: Time
-}
-
-input NewDress {
-    title: String
-    price: Float
-    currency: String
-    description: String
-    sku: String
-    stock: Int
-    sizes: [String]
-    colors: [String]
+    createAt: Time!
 }

@@ -6,14 +6,15 @@ package graph
 import (
 	"context"
 	"errors"
+	"fmt"
 
 	"github.com/thamthee/merchant/business/graph/models"
 )
 
-func (r *mutationResolver) CreateSoftware(ctx context.Context, input models.NewSoftware) (*models.Software, error) {
+func (r *mutationResolver) CreateFood(ctx context.Context, input models.NewFood) (*models.Food, error) {
 	return nil, errors.New("waiting for implement")
 }
 
-func (r *queryResolver) Software(ctx context.Context, id string) (*models.Software, error) {
-	return nil, errors.New("not found")
+func (r *queryResolver) Food(ctx context.Context, id string) (*models.Food, error) {
+	panic(fmt.Errorf("not implemented"))
 }
