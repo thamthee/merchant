@@ -5,7 +5,6 @@ package graph
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	"github.com/thamthee/merchant/business/adapter"
@@ -36,6 +35,11 @@ func (r *queryResolver) Seller(ctx context.Context, id string) (*models.Seller, 
 	return &sg, nil
 }
 
-func (r *queryResolver) Sellers(ctx context.Context, limit int, offer int) ([]*models.Seller, error) {
-	panic(fmt.Errorf("not implemented"))
+func (r *queryResolver) Sellers(ctx context.Context, limit int, offer int) ([]models.Seller, error) {
+	sellers, err := r.seller.QueryAllByPaginate(ctx, limit, offer)
+	if err != nil {
+		return nil, err
+	}
+
+	return adapter.SellersDBToGraphs(ctx, sellers), nil
 }

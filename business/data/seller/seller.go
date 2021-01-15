@@ -10,6 +10,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 var (
@@ -85,4 +86,27 @@ func (s Seller) QueryByID(ctx context.Context, id string) (Info, error) {
 	}
 
 	return info, nil
+}
+
+func (s Seller) QueryAllByPaginate(ctx context.Context, limit, offer int) ([]Info, error) {
+	findOptions := options.Find().
+		SetLimit(int64(limit)).
+		SetSkip(int64(offer))
+
+	col := s.db.Collection(Collection)
+
+	var sellers []Info
+	cursor, err := col.Find(ctx, bson.D{}, findOptions)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return nil, ErrNotFound
+		}
+		return nil, errors.Wrap(err, "selecting")
+	}
+
+	if err := cursor.All(ctx, &sellers); err != nil {
+		return nil, errors.Wrap(err, "unable to decode payload")
+	}
+
+	return sellers, nil
 }

@@ -121,7 +121,7 @@ type QueryResolver interface {
 	Dress(ctx context.Context, id string) (*models.Dress, error)
 	Food(ctx context.Context, id string) (*models.Food, error)
 	Seller(ctx context.Context, id string) (*models.Seller, error)
-	Sellers(ctx context.Context, limit int, offer int) ([]*models.Seller, error)
+	Sellers(ctx context.Context, limit int, offer int) ([]models.Seller, error)
 	Software(ctx context.Context, id string) (*models.Software, error)
 }
 
@@ -2039,9 +2039,9 @@ func (ec *executionContext) _Query_sellers(ctx context.Context, field graphql.Co
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.([]*models.Seller)
+	res := resTmp.([]models.Seller)
 	fc.Result = res
-	return ec.marshalOSeller2ᚕᚖgithubᚗcomᚋthamtheeᚋmerchantᚋbusinessᚋgraphᚋmodelsᚐSellerᚄ(ctx, field.Selections, res)
+	return ec.marshalOSeller2ᚕgithubᚗcomᚋthamtheeᚋmerchantᚋbusinessᚋgraphᚋmodelsᚐSellerᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query_software(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -5204,7 +5204,7 @@ func (ec *executionContext) marshalOSearchResult2githubᚗcomᚋthamtheeᚋmerch
 	return ec._SearchResult(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalOSeller2ᚕᚖgithubᚗcomᚋthamtheeᚋmerchantᚋbusinessᚋgraphᚋmodelsᚐSellerᚄ(ctx context.Context, sel ast.SelectionSet, v []*models.Seller) graphql.Marshaler {
+func (ec *executionContext) marshalOSeller2ᚕgithubᚗcomᚋthamtheeᚋmerchantᚋbusinessᚋgraphᚋmodelsᚐSellerᚄ(ctx context.Context, sel ast.SelectionSet, v []models.Seller) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
@@ -5231,7 +5231,7 @@ func (ec *executionContext) marshalOSeller2ᚕᚖgithubᚗcomᚋthamtheeᚋmerch
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalNSeller2ᚖgithubᚗcomᚋthamtheeᚋmerchantᚋbusinessᚋgraphᚋmodelsᚐSeller(ctx, sel, v[i])
+			ret[i] = ec.marshalNSeller2githubᚗcomᚋthamtheeᚋmerchantᚋbusinessᚋgraphᚋmodelsᚐSeller(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)

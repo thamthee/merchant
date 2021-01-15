@@ -20,7 +20,7 @@ resolver:
   filename_template: "{name}.resolver.go"
 
 struct_tag: json
-omit_slice_element_pointers: false
+omit_slice_element_pointers: true
 skip_validation: true
 
 autobind:
