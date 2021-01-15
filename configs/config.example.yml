@@ -1,0 +1,11 @@
+mongo:
+  auth-mechanism: ""
+  auth-source: ""
+  username: ""
+  password: ""
+  hosts: [""]
+  replica-set-name: ""
+  is-direct: false
+
+web:
+  api-host: ""
