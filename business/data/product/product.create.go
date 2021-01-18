@@ -2,6 +2,7 @@ package product
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/pkg/errors"
@@ -10,7 +11,8 @@ import (
 
 // CreateSoftware inserts a new product software into the database.
 func (p Product) CreateSoftware(ctx context.Context, seller string, ns NewSoftware, date time.Time) (Info, error) {
-	price, err := primitive.ParseDecimal128(ns.Price)
+	price, err := primitive.ParseDecimal128(fmt.Sprintf("%v", ns.Price))
+
 	if err != nil {
 		return Info{}, errors.Wrap(err, "parse price")
 	}

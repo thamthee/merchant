@@ -5,6 +5,9 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
+	"time"
+
+	"github.com/dgrijalva/jwt-go/v4"
 
 	"github.com/thamthee/merchant/business/auth"
 )
@@ -54,4 +57,31 @@ func Authorize(roles ...string) func(http.Handler) http.Handler {
 			next.ServeHTTP(w, r)
 		})
 	}
+}
+
+func BypassToken(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		authStr := r.Header.Get("authorization")
+
+		parts := strings.Split(authStr, " ")
+		if len(parts) != 2 || strings.ToLower(parts[0]) != "bearer" {
+			http.Error(w, "expected authorization header format: bearer <token>", http.StatusUnauthorized)
+			return
+		}
+
+		claims := auth.Claims{
+			StandardClaims: jwt.StandardClaims{
+				Issuer:    "service project",
+				ExpiresAt: jwt.At(time.Now().Add(time.Hour)),
+				IssuedAt:  jwt.At(time.Now()),
+				Subject:   parts[1],
+			},
+			Roles: []string{auth.RoleAdmin},
+		}
+
+		ctx := context.WithValue(r.Context(), auth.Key, claims)
+
+		r.WithContext(ctx)
+		next.ServeHTTP(w, r)
+	})
 }

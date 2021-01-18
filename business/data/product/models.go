@@ -41,14 +41,14 @@ type Software struct {
 }
 
 type NewSoftware struct {
-	Title       string `json:"title" validate:"required"`
-	Price       string `json:"price" validate:"required"`
-	Currency    string `json:"currency" validate:"required"`
-	Description string `json:"description"`
-	SKU         string `json:"sku"`
-	Stock       int    `json:"stock"`
-	License     string `json:"license"`
-	Code        string `json:"code"`
+	Title       string  `json:"title" validate:"required"`
+	Price       float64 `json:"price" validate:"required"`
+	Currency    string  `json:"currency" validate:"required"`
+	Description string  `json:"description"`
+	SKU         string  `json:"sku"`
+	Stock       int     `json:"stock"`
+	License     string  `json:"license"`
+	Code        string  `json:"code"`
 }
 
 type Food struct {
