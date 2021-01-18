@@ -69,7 +69,7 @@ type NewFood struct {
 }
 
 type NewSeller struct {
-	Title       string  `json:"title"`
+	Name        string  `json:"name"`
 	Slug        *string `json:"slug"`
 	Description string  `json:"description"`
 }
@@ -87,7 +87,7 @@ type NewSoftware struct {
 
 type Seller struct {
 	ID          string `json:"id"`
-	Title       string `json:"title"`
+	Name        string `json:"name"`
 	Slug        string `json:"slug"`
 	Description string `json:"description"`
 }

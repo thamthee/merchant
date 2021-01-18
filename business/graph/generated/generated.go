@@ -80,19 +80,20 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
-		Dress    func(childComplexity int, id string) int
-		Food     func(childComplexity int, id string) int
-		Product  func(childComplexity int, id string) int
-		Seller   func(childComplexity int, id string) int
-		Sellers  func(childComplexity int, limit int, offer int) int
-		Software func(childComplexity int, id string) int
+		Dress           func(childComplexity int, id string) int
+		Food            func(childComplexity int, id string) int
+		Product         func(childComplexity int, id string) int
+		Seller          func(childComplexity int, id string) int
+		Sellers         func(childComplexity int, limit int, offer int) int
+		Software        func(childComplexity int, id string) int
+		SoftwareBundles func(childComplexity int, list []string) int
 	}
 
 	Seller struct {
 		Description func(childComplexity int) int
 		ID          func(childComplexity int) int
+		Name        func(childComplexity int) int
 		Slug        func(childComplexity int) int
-		Title       func(childComplexity int) int
 	}
 
 	Software struct {
@@ -123,6 +124,7 @@ type QueryResolver interface {
 	Seller(ctx context.Context, id string) (*models.Seller, error)
 	Sellers(ctx context.Context, limit int, offer int) ([]models.Seller, error)
 	Software(ctx context.Context, id string) (*models.Software, error)
+	SoftwareBundles(ctx context.Context, list []string) ([]models.Software, error)
 }
 
 type executableSchema struct {
@@ -407,6 +409,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.Software(childComplexity, args["id"].(string)), true
 
+	case "Query.softwareBundles":
+		if e.complexity.Query.SoftwareBundles == nil {
+			break
+		}
+
+		args, err := ec.field_Query_softwareBundles_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.SoftwareBundles(childComplexity, args["list"].([]string)), true
+
 	case "Seller.description":
 		if e.complexity.Seller.Description == nil {
 			break
@@ -421,19 +435,19 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Seller.ID(childComplexity), true
 
+	case "Seller.name":
+		if e.complexity.Seller.Name == nil {
+			break
+		}
+
+		return e.complexity.Seller.Name(childComplexity), true
+
 	case "Seller.slug":
 		if e.complexity.Seller.Slug == nil {
 			break
 		}
 
 		return e.complexity.Seller.Slug(childComplexity), true
-
-	case "Seller.title":
-		if e.complexity.Seller.Title == nil {
-			break
-		}
-
-		return e.complexity.Seller.Title(childComplexity), true
 
 	case "Software.code":
 		if e.complexity.Software.Code == nil {
@@ -678,14 +692,14 @@ extend type Mutation {
 }
 
 input NewSeller {
-    title: String!
+    name: String!
     slug: String
     description: String!
 }
 
 type Seller {
     id: ID!
-    title: String!
+    name: String!
     slug: String!
     description: String!
 }
@@ -693,6 +707,8 @@ type Seller {
 	{Name: "schema/software.graphqls", Input: `
 extend type Query {
     software(id: ID!): Software
+
+    softwareBundles(list: [ID!]): [Software!]
 }
 
 extend type Mutation {
@@ -887,6 +903,21 @@ func (ec *executionContext) field_Query_sellers_args(ctx context.Context, rawArg
 		}
 	}
 	args["offer"] = arg1
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_softwareBundles_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 []string
+	if tmp, ok := rawArgs["list"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("list"))
+		arg0, err = ec.unmarshalOID2ᚕstringᚄ(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["list"] = arg0
 	return args, nil
 }
 
@@ -2083,6 +2114,45 @@ func (ec *executionContext) _Query_software(ctx context.Context, field graphql.C
 	return ec.marshalOSoftware2ᚖgithubᚗcomᚋthamtheeᚋmerchantᚋbusinessᚋgraphᚋmodelsᚐSoftware(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Query_softwareBundles(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Query_softwareBundles_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().SoftwareBundles(rctx, args["list"].([]string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]models.Software)
+	fc.Result = res
+	return ec.marshalOSoftware2ᚕgithubᚗcomᚋthamtheeᚋmerchantᚋbusinessᚋgraphᚋmodelsᚐSoftwareᚄ(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Query___type(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -2189,7 +2259,7 @@ func (ec *executionContext) _Seller_id(ctx context.Context, field graphql.Collec
 	return ec.marshalNID2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Seller_title(ctx context.Context, field graphql.CollectedField, obj *models.Seller) (ret graphql.Marshaler) {
+func (ec *executionContext) _Seller_name(ctx context.Context, field graphql.CollectedField, obj *models.Seller) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -2207,7 +2277,7 @@ func (ec *executionContext) _Seller_title(ctx context.Context, field graphql.Col
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Title, nil
+		return obj.Name, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -3916,11 +3986,11 @@ func (ec *executionContext) unmarshalInputNewSeller(ctx context.Context, obj int
 
 	for k, v := range asMap {
 		switch k {
-		case "title":
+		case "name":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("title"))
-			it.Title, err = ec.unmarshalNString2string(ctx, v)
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
+			it.Name, err = ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -4369,6 +4439,17 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 				res = ec._Query_software(ctx, field)
 				return res
 			})
+		case "softwareBundles":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_softwareBundles(ctx, field)
+				return res
+			})
 		case "__type":
 			out.Values[i] = ec._Query___type(ctx, field)
 		case "__schema":
@@ -4400,8 +4481,8 @@ func (ec *executionContext) _Seller(ctx context.Context, sel ast.SelectionSet, o
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
-		case "title":
-			out.Values[i] = ec._Seller_title(ctx, field, obj)
+		case "name":
+			out.Values[i] = ec._Seller_name(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
@@ -5197,6 +5278,42 @@ func (ec *executionContext) marshalOBoolean2ᚖbool(ctx context.Context, sel ast
 	return graphql.MarshalBoolean(*v)
 }
 
+func (ec *executionContext) unmarshalOID2ᚕstringᚄ(ctx context.Context, v interface{}) ([]string, error) {
+	if v == nil {
+		return nil, nil
+	}
+	var vSlice []interface{}
+	if v != nil {
+		if tmp1, ok := v.([]interface{}); ok {
+			vSlice = tmp1
+		} else {
+			vSlice = []interface{}{v}
+		}
+	}
+	var err error
+	res := make([]string, len(vSlice))
+	for i := range vSlice {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
+		res[i], err = ec.unmarshalNID2string(ctx, vSlice[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
+}
+
+func (ec *executionContext) marshalOID2ᚕstringᚄ(ctx context.Context, sel ast.SelectionSet, v []string) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	for i := range v {
+		ret[i] = ec.marshalNID2string(ctx, sel, v[i])
+	}
+
+	return ret
+}
+
 func (ec *executionContext) marshalOSearchResult2githubᚗcomᚋthamtheeᚋmerchantᚋbusinessᚋgraphᚋmodelsᚐSearchResult(ctx context.Context, sel ast.SelectionSet, v models.SearchResult) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
@@ -5249,6 +5366,46 @@ func (ec *executionContext) marshalOSeller2ᚖgithubᚗcomᚋthamtheeᚋmerchant
 		return graphql.Null
 	}
 	return ec._Seller(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOSoftware2ᚕgithubᚗcomᚋthamtheeᚋmerchantᚋbusinessᚋgraphᚋmodelsᚐSoftwareᚄ(ctx context.Context, sel ast.SelectionSet, v []models.Software) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNSoftware2githubᚗcomᚋthamtheeᚋmerchantᚋbusinessᚋgraphᚋmodelsᚐSoftware(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+	return ret
 }
 
 func (ec *executionContext) marshalOSoftware2ᚖgithubᚗcomᚋthamtheeᚋmerchantᚋbusinessᚋgraphᚋmodelsᚐSoftware(ctx context.Context, sel ast.SelectionSet, v *models.Software) graphql.Marshaler {

@@ -88,6 +88,46 @@ func (s Seller) QueryByID(ctx context.Context, id string) (Info, error) {
 	return info, nil
 }
 
+func (s Seller) QueryByIDs(ctx context.Context, ids []string) ([]Info, error) {
+	var hexs []primitive.ObjectID
+	for _, id := range ids {
+		hex, err := primitive.ObjectIDFromHex(id)
+		if err != nil {
+			return nil, ErrInvalidID
+		}
+
+		hexs = append(hexs, hex)
+	}
+
+	filter := bson.D{
+		primitive.E{
+			Key: "_id",
+			Value: bson.D{
+				primitive.E{
+					Key:   "$in",
+					Value: hexs,
+				},
+			},
+		},
+	}
+
+	col := s.db.Collection(Collection)
+
+	res, err := col.Find(ctx, filter)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return nil, ErrNotFound
+		}
+		return nil, errors.Wrap(err, "selecting sellers")
+	}
+	var sellers []Info
+	if err := res.All(ctx, &sellers); err != nil {
+		return nil, errors.Wrap(err, "unable to decode")
+	}
+
+	return sellers, nil
+}
+
 func (s Seller) QueryAllByPaginate(ctx context.Context, limit, offer int) ([]Info, error) {
 	findOptions := options.Find().
 		SetLimit(int64(limit)).

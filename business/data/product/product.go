@@ -87,6 +87,46 @@ func (p Product) QuerySoftwareByID(ctx context.Context, id string) (Software, er
 	return sw, nil
 }
 
+func (p Product) QuerySoftwareByIDs(ctx context.Context, ids []string) ([]Software, error) {
+	var hexs []primitive.ObjectID
+	for _, id := range ids {
+		hex, err := primitive.ObjectIDFromHex(id)
+		if err != nil {
+			return nil, ErrInvalidID
+		}
+
+		hexs = append(hexs, hex)
+	}
+
+	filter := bson.D{
+		primitive.E{
+			Key: "_id",
+			Value: bson.D{
+				primitive.E{
+					Key:   "$in",
+					Value: hexs,
+				},
+			},
+		},
+	}
+
+	col := p.db.Collection(Collection)
+
+	res, err := col.Find(ctx, filter)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return nil, ErrNotFound
+		}
+		return nil, errors.Wrap(err, "selecting software")
+	}
+	var software []Software
+	if err := res.All(ctx, &software); err != nil {
+		return nil, errors.Wrap(err, "unable to decode")
+	}
+
+	return software, nil
+}
+
 func (p Product) QueryFoodByID(ctx context.Context, id string) (Food, error) {
 	hex, err := primitive.ObjectIDFromHex(id)
 	if err != nil {

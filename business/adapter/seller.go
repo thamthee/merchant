@@ -9,7 +9,7 @@ import (
 
 func NewSellerGraphToDB(ctx context.Context, ns models.NewSeller) seller.NewSeller {
 	return seller.NewSeller{
-		Title:       ns.Title,
+		Title:       ns.Name,
 		Slug:        pointerStringToString(ns.Slug),
 		Description: ns.Description,
 	}
@@ -26,7 +26,7 @@ func SellersDBToGraphs(ctx context.Context, sellers []seller.Info) []models.Sell
 func SellerDBToGraph(ctx context.Context, info seller.Info) models.Seller {
 	return models.Seller{
 		ID:          info.ID.Hex(),
-		Title:       info.Title,
+		Name:        info.Title,
 		Slug:        info.Slug,
 		Description: info.Description,
 	}

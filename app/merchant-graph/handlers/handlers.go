@@ -11,6 +11,7 @@ import (
 
 	"github.com/thamthee/merchant/business/data/product"
 	"github.com/thamthee/merchant/business/data/seller"
+	"github.com/thamthee/merchant/business/dataloader"
 	"github.com/thamthee/merchant/business/graph"
 	"github.com/thamthee/merchant/business/graph/generated"
 	"github.com/thamthee/merchant/business/mid"
@@ -29,10 +30,17 @@ func API(log *logrus.Logger, mClient *mongo.Client, addr string) error {
 		Complexity: generated.ComplexityRoot{},
 	}))
 
+	data := dataloader.New(
+		log,
+		product.New(log, mClient.Database(database.Merchant)),
+		seller.New(log, mClient.Database(database.Merchant)),
+	)
+
 	router.Handle("/", playground.Handler("Playground", "/query"))
 
 	router.Group(func(r chi.Router) {
 		r.Use(mid.BypassToken)
+		r.Use(mid.Loader(data))
 		r.Handle("/query", srv)
 	})
 

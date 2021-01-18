@@ -10,6 +10,7 @@ import (
 
 	"github.com/thamthee/merchant/business/adapter"
 	"github.com/thamthee/merchant/business/auth"
+	"github.com/thamthee/merchant/business/dataloader"
 	"github.com/thamthee/merchant/business/graph/models"
 )
 
@@ -37,23 +38,25 @@ func (r *mutationResolver) CreateSoftware(ctx context.Context, input models.NewS
 }
 
 func (r *queryResolver) Software(ctx context.Context, id string) (*models.Software, error) {
-	claims, ok := ctx.Value(auth.Key).(*auth.Claims)
+	_, ok := ctx.Value(auth.Key).(*auth.Claims)
 
 	if !ok {
 		return nil, errors.New("claims missing from context")
 	}
 
-	sf, err := r.product.QuerySoftwareByID(ctx, id)
+	loader, ok := ctx.Value(dataloader.Key).(*dataloader.Loader)
+	if !ok {
+		return nil, errors.New("data loader missing from context")
+	}
+
+	software, err := loader.SoftwareByID.Load(id)
 	if err != nil {
 		return nil, err
 	}
 
-	sl, err := r.seller.QueryByID(ctx, claims.Subject)
-	if err != nil {
-		return nil, err
-	}
+	return software, nil
+}
 
-	sg := adapter.SoftwareDBToGraph(ctx, sf, sl)
-
-	return &sg, nil
+func (r *queryResolver) SoftwareBundles(ctx context.Context, list []string) ([]models.Software, error) {
+	return nil, errors.New("not found")
 }

@@ -1,6 +1,8 @@
 
 extend type Query {
     software(id: ID!): Software
+
+    softwareBundles(list: [ID!]): [Software!]
 }
 
 extend type Mutation {

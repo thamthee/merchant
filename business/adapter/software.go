@@ -40,7 +40,7 @@ func SoftwareDBToGraph(ctx context.Context, sw product.Software, sl seller.Info)
 		Stock:       sw.Stock,
 		Owner: &models.Seller{
 			ID:          sl.ID.Hex(),
-			Title:       sl.Title,
+			Name:        sl.Title,
 			Slug:        sl.Slug,
 			Description: sl.Description,
 		},
@@ -66,7 +66,7 @@ func ProductDBToSoftwareGraph(ctx context.Context, info product.Info, sl seller.
 		Stock:       info.Stock,
 		Owner: &models.Seller{
 			ID:          sl.ID.Hex(),
-			Title:       sl.Title,
+			Name:        sl.Title,
 			Slug:        sl.Slug,
 			Description: sl.Description,
 		},
