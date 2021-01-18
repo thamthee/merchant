@@ -14,7 +14,7 @@ import (
 )
 
 func (r *mutationResolver) CreateSoftware(ctx context.Context, input models.NewSoftware) (*models.Software, error) {
-	claims, ok := ctx.Value(auth.Key).(auth.Claims)
+	claims, ok := ctx.Value(auth.Key).(*auth.Claims)
 	if !ok {
 		return nil, errors.New("claims missing from context")
 	}
@@ -37,7 +37,8 @@ func (r *mutationResolver) CreateSoftware(ctx context.Context, input models.NewS
 }
 
 func (r *queryResolver) Software(ctx context.Context, id string) (*models.Software, error) {
-	claims, ok := ctx.Value(auth.Key).(auth.Claims)
+	claims, ok := ctx.Value(auth.Key).(*auth.Claims)
+
 	if !ok {
 		return nil, errors.New("claims missing from context")
 	}

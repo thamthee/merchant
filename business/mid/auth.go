@@ -79,9 +79,9 @@ func BypassToken(next http.Handler) http.Handler {
 			Roles: []string{auth.RoleAdmin},
 		}
 
-		ctx := context.WithValue(r.Context(), auth.Key, claims)
+		ctx := context.WithValue(r.Context(), auth.Key, &claims)
 
-		r.WithContext(ctx)
+		r = r.WithContext(ctx)
 		next.ServeHTTP(w, r)
 	})
 }
